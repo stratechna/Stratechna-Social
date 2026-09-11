@@ -62,6 +62,9 @@ INJ = (
 trocar(NGINX, "location / {\n", INJ, minimo=1)
 # O TLS termina no Traefik: o Postiz tem de saber que o pedido original é https
 trocar(NGINX, "proxy_set_header X-Forwarded-Proto $scheme;", "proxy_set_header X-Forwarded-Proto https;", minimo=2)
+# O backend (Node) escuta em [::1]; o nginx resolve «localhost» para 127.0.0.1 e a API
+# dava 502. É o mesmo endereço do BACKEND_INTERNAL_URL da produção.
+trocar(NGINX, "proxy_pass http://localhost:3000/;", "proxy_pass http://[::1]:3000/;", minimo=1)
 
 # ── 3. O nome nos textos compilados (traduções, títulos) ───────────────────
 alvos = [p for p in NEXT.rglob("*.js") if p.is_file()]

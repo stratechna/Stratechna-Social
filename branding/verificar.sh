@@ -12,7 +12,7 @@ S=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')
 FALHAS=0
 falha() { FALHAS=$((FALHAS + 1)); echo "  FALHA: $1"; }
 ok() { echo "  ok: $1"; }
-limpar() { docker rm -f $ID-app $ID-db $ID-redis >/dev/null 2>&1; docker network rm $ID >/dev/null 2>&1; }
+limpar() { docker rm -f $ID-app $ID-db $ID-redis $ID-temporal $ID-es >/dev/null 2>&1; docker network rm $ID >/dev/null 2>&1; }
 trap limpar EXIT
 # «Postiz» como palavra inteira (MyPostizAgent é um identificador de código, não conta)
 conta_nome() { python3 -c 'import re,sys; print(len(re.findall(r"(?<![A-Za-z0-9_$])Postiz(?![A-Za-z0-9_$])", sys.stdin.read())))'; }
@@ -22,17 +22,42 @@ docker run -d --name $ID-db --network $ID -e POSTGRES_DB=postiz -e POSTGRES_USER
   -e POSTGRES_PASSWORD="$S" postgres:16-alpine >/dev/null
 docker run -d --name $ID-redis --network $ID redis:7-alpine >/dev/null
 sleep 5
+# O backend do Postiz não arranca sem Temporal (ECONNREFUSED :7233), e com a visibilidade
+# em PostgreSQL o Temporal recusa os atributos de pesquisa do Postiz (máximo de 3 do tipo
+# Text). Como na produção: Temporal 1.26.2 com visibilidade em Elasticsearch 8.16.1.
+docker run -d --name $ID-es --network $ID -e discovery.type=single-node \
+  -e xpack.security.enabled=false -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+  -e cluster.routing.allocation.disk.watermark.low=95% -e cluster.routing.allocation.disk.watermark.high=97% \
+  -e cluster.routing.allocation.disk.watermark.flood_stage=98% elasticsearch:8.16.1 >/dev/null
+echo "== à espera do Elasticsearch =="
+for i in $(seq 1 60); do
+  docker exec $ID-es curl -sf http://localhost:9200/_cluster/health >/dev/null 2>&1 && break
+  if [ "$i" = 60 ]; then docker logs --tail 20 $ID-es; echo "FALHA: Elasticsearch não arrancou"; exit 1; fi
+  sleep 5
+done
+ok "Elasticsearch pronto"
+docker run -d --name $ID-temporal --network $ID -e DB=postgres12 -e DB_PORT=5432 \
+  -e POSTGRES_USER=postiz -e POSTGRES_PWD="$S" -e POSTGRES_SEEDS=$ID-db \
+  -e ENABLE_ES=true -e ES_SEEDS=$ID-es -e ES_VERSION=v7 \
+  temporalio/auto-setup:1.26.2 >/dev/null
+echo "== à espera do Temporal =="
+for i in $(seq 1 60); do
+  docker exec $ID-temporal sh -c 'nc -z $(hostname -i) 7233' >/dev/null 2>&1 && break
+  if [ "$i" = 60 ]; then docker logs --tail 20 $ID-temporal; echo "FALHA: Temporal não arrancou"; exit 1; fi
+  sleep 5
+done
+sleep 20   # o auto-setup regista o namespace «default» depois de abrir a porta
+ok "Temporal pronto"
 docker run -d --name $ID-app --network $ID -p 127.0.0.1:$PORTA:5000 \
   -e DATABASE_URL="postgresql://postiz:$S@$ID-db:5432/postiz" -e REDIS_URL="redis://$ID-redis:6379" \
   -e JWT_SECRET="$S" -e MAIN_URL=$B -e FRONTEND_URL=$B -e NEXT_PUBLIC_BACKEND_URL=$B/api \
   -e BACKEND_INTERNAL_URL=http://localhost:3000 -e IS_GENERAL=true -e DISABLE_REGISTRATION=true \
   -e STORAGE_PROVIDER=local -e UPLOAD_DIRECTORY=/uploads -e NEXT_PUBLIC_UPLOAD_DIRECTORY=/uploads \
-  -e TEMPORAL_ADDRESS=localhost:7233 \
+  -e TEMPORAL_ADDRESS=$ID-temporal:7233 \
   "$IMG" >/dev/null
 
-# O Postiz arranca por fases (prisma, depois vários processos pm2); sem Temporal no
-# teste, parte do backend reinicia em ciclo. Espera-se por 3 respostas seguidas e
-# cada pedido tenta de novo em caso de erro.
+# O Postiz arranca por fases (prisma, depois vários processos pm2). Espera-se por 3
+# respostas seguidas e cada pedido tenta de novo em caso de erro.
 echo "== à espera do arranque =="
 SEGUIDAS=0
 for i in $(seq 1 150); do
@@ -78,6 +103,12 @@ U=$(curl -sI "$B/uploads/verif/t.png")
 printf '%s' "$U" | grep -qi "content-security-policy:.*sandbox" && printf '%s' "$U" | grep -qi "x-content-type-options: nosniff" \
   && ok "/uploads/ com CSP em sandbox e nosniff" || falha "/uploads/ sem as protecções: $(printf '%s' "$U" | head -1)"
 docker exec $ID-app grep -q "X-Forwarded-Proto https" /etc/nginx/nginx.conf && ok "nginx: X-Forwarded-Proto https" || falha "nginx sem X-Forwarded-Proto https"
+
+echo "== API (backend) através do nginx =="
+# sem sessão, o backend vivo responde 401; 502 é o nginx sem chegar ao backend
+A=000
+for i in $(seq 1 24); do A=$(curl -s -o /dev/null -w '%{http_code}' "$B/api/user/self"); [ "$A" != 502 ] && [ "$A" != 000 ] && break; sleep 5; done
+[ "$A" != 502 ] && [ "$A" != 000 ] && ok "API responde ($A)" || falha "API inacessível pelo nginx ($A)"
 
 echo
 if [ $FALHAS -gt 0 ]; then
