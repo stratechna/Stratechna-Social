@@ -1,0 +1,103 @@
+/* ── Stratechna Branding v5 ────────────────────────────────────────── */
+
+/* === CSS VARIABLES OVERRIDE === */
+:root, html, body {
+  --color-primary: #880000 !important;
+  --new-btn-primary: #880000 !important;
+  --color-forth: #3D5163 !important;
+  --new-textItemFocused: #CC0000 !important;
+  --new-boxFocused: rgba(61, 81, 99, 0.35) !important;
+  --new-ai-btn: #880000 !important;
+  --new-box-hover: rgba(61, 81, 99, 0.2) !important;
+}
+
+/* === LOGIN PAGE === */
+svg[width="101"][height="33"] { display: none !important; }
+div.text-\[36px\] { display: none !important; }
+
+/* === SIDEBAR === */
+svg[width="60"][height="60"] { display: none !important; }
+
+/* Borda do item activo na sidebar: vermelho → cinzento azulado */
+/* O item activo tem border-left com cor textItemFocused */
+[class*="minCustom:h-[54px]"][class*="text-textItemFocused"],
+[class*="minCustom:h-[54px]"].text-textItemFocused,
+a.text-textItemFocused,
+button.text-textItemFocused {
+  border-left-color: #3D5163 !important;
+  border-color: #3D5163 !important;
+}
+
+/* === BOTÕES PRIMÁRIOS === */
+.bg-primary, [class*="bg-primary"],
+[class*="bg-\[#612BD3\]"],
+[class*="bg-\[#6c47ff\]"],
+[class*="bg-\[#7640e0\]"],
+[class*="bg-\[#5023b8\]"],
+[class*="bg-\[#7B3FF2\]"],
+[class*="bg-\[#622FF6\]"] {
+  background-color: #880000 !important;
+}
+[class*="bg-\[#612BD3\]"]:hover,
+[class*="bg-\[#6c47ff\]"]:hover,
+.bg-primary:hover { background-color: #660000 !important; }
+
+.bg-btnPrimary { background-color: #880000 !important; }
+.bg-btnPrimary:hover { background-color: #660000 !important; }
+.bg-forth { background-color: #3D5163 !important; }
+.bg-forth:hover { background-color: #2a3a47 !important; }
+.bg-ai { background-color: #880000 !important; }
+
+/* === TEXTO PRIMÁRIO === */
+.text-primary, [class*="text-primary"],
+[class*="text-\[#FC69FF\]"],
+[class*="text-\[#612BD3\]"],
+[class*="text-\[#6c47ff\]"],
+[class*="text-\[#B69DEC\]"] { color: #CC0000 !important; }
+
+/* === BORDAS PRIMÁRIAS === */
+[class*="border-\[#612BD3\]"],
+[class*="border-\[#622FF6\]"],
+[class*="border-\[#FC69FF\]"],
+.border-primary { border-color: #880000 !important; }
+[class*="hover:border-\[#612BD3\]"]:hover { border-color: #880000 !important; }
+
+/* === ITEM ACTIVO SIDEBAR === */
+.bg-boxFocused { background-color: rgba(61, 81, 99, 0.35) !important; }
+.text-textItemFocused { color: #CC0000 !important; border-color: #3D5163 !important; }
+.hover\:bg-boxFocused:hover { background-color: rgba(61, 81, 99, 0.25) !important; }
+.hover\:text-textItemFocused:hover { color: #CC0000 !important; }
+
+/* === TOGGLES / SWITCHES (roxo → vermelho Stratechna) === */
+/* Tailwind/React toggles com fundo roxo quando activos */
+button[role="switch"][data-state="checked"],
+button[role="switch"][aria-checked="true"],
+[class*="bg-[#612BD3]"],
+[class*="checked:bg-primary"],
+input:checked + span,
+input:checked ~ span { background-color: #880000 !important; }
+
+/* Scrollbar thumb roxo */
+.scrollbar-thumb-\[\#612AD5\] { --scrollbar-thumb: #880000 !important; }
+
+/* Gradient AI/premium com roxo */
+.from-\[\#622aff\] { --tw-gradient-from: #880000 var(--tw-gradient-from-position) !important; }
+.to-\[\#8b5cf6\] { --tw-gradient-to: #660000 var(--tw-gradient-to-position) !important; }
+
+/* ── Fim Stratechna Branding v5 ─────────────────────────────────────── */
+
+/* Toggle activo */
+.bg-customColor4 { background-color: #880000 !important; }
+/* Borda lateral activa */
+.border-fifth { border-color: #3D5163 !important; }
+/* Borda geral vermelha da sidebar */
+[class*="newBgLineColor"] { border-color: #2A3A4A !important; }
+/* Outline vermelho -> azulado */
+body * { outline-color: #3D5163 !important; }
+/* Borda exterior wrapper */
+.bg-newBgLineColor { background-color: #2A3A4A !important; }
+.newBgLineColor { background-color: #2A3A4A !important; }
+/* Body background: nao usar cor primaria como fundo */
+body, body.dark { background-color: #0E0E0E !important; background: #0E0E0E !important; }
+/* !bg-primary no body -> escuro */
+body.\!bg-primary { background-color: #0E0E0E !important; }

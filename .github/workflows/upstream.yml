@@ -1,0 +1,33 @@
+name: Versão nova do Postiz
+
+# A imagem não se actualiza sozinha. Isto só avisa, com um issue, quando o
+# Postiz publica uma versão diferente da que está fixada no Dockerfile.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FIXADA=$(sed -nE 's/^ARG POSTIZ_VERSION=(.+)$/\1/p' Dockerfile)
+          NOVA=$(gh release view --repo gitroomhq/postiz-app --json tagName -q .tagName)
+          echo "fixada: $FIXADA | upstream: $NOVA"
+          [ -n "$NOVA" ] && [ "$NOVA" != "$FIXADA" ] || exit 0
+          TITULO="Postiz $NOVA disponível (fixado em $FIXADA)"
+          [ "$(gh issue list --state open --search "in:title \"$TITULO\"" --json number -q length)" = "0" ] || exit 0
+          gh issue create --title "$TITULO" --body "Notas: https://github.com/gitroomhq/postiz-app/releases/tag/$NOVA
+
+          Para actualizar:
+          1. Mudar \`ARG POSTIZ_VERSION\` no Dockerfile e fazer push.
+          2. O build falha se alguma troca do \`branding/aplicar.py\` deixar de encaixar; a verificação falha se o nome do upstream ficar visível. O \`stratechna-branding.js\` mexe na página por selectores — confirmar no browser que o login e a barra lateral continuam certos.
+          3. Mudança de versão menor (ex. 2.21 → 2.23): a produção segue a tag \`2.21\` e não muda sozinha. Backup, testar, mudar a tag no compose."
