@@ -101,3 +101,9 @@ body * { outline-color: #3D5163 !important; }
 body, body.dark { background-color: #0E0E0E !important; background: #0E0E0E !important; }
 /* !bg-primary no body -> escuro */
 body.\!bg-primary { background-color: #0E0E0E !important; }
+/* === LISTA DE ORGANIZAÇÕES DA BARRA DE TOPO ===
+   O menu abre com `absolute top-[100%]` e sem z-index: o conteúdo da página,
+   que é pintado depois, ficava-lhe por cima. Da terceira organização para
+   baixo não se via nada e o clique ia parar ao conteúdo que estava atrás.
+   Visto a 11-10-2026 com quatro organizações — a Webgate era inalcançável. */
+.group > .absolute.top-\[100\%\].end-0.bg-third { z-index: 60; }
