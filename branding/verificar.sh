@@ -97,6 +97,19 @@ for f in stratechna-branding.js stratechna.css stratechna-logo.png stratechna-ic
   else falha "/$f não é o nosso (recebido: $(cat /tmp/$ID-h); nosso: $(wc -c < "$DIR/ficheiros/$f") bytes)"; fi
 done
 rm -f /tmp/$ID-f /tmp/$ID-h
+echo "== aspecto Stratechna: letra local, nada do Google =="
+for f in stratechna-fontes.css stratechna-fonts/dm-sans-latin-wght-normal.woff2 stratechna-fonts/dm-sans-latin-ext-wght-normal.woff2 stratechna-fonts/dm-sans-latin-wght-italic.woff2; do
+  C=$(curl -s --retry 5 --retry-delay 3 --retry-all-errors -o /dev/null -w '%{http_code}' "$B/$f")
+  [ "$C" = 200 ] && ok "/$f (200)" || falha "/$f devolveu $C"
+done
+CSS=$(obter "$B/stratechna.css")
+printf '%s' "$CSS" | grep -qi '#b20009' && ok "stratechna.css com o vermelho de acção" || falha "stratechna.css sem #b20009"
+printf '%s' "$CSS" | grep -q 'stratechna-fontes.css' && ok "stratechna.css importa a letra" || falha "stratechna.css sem a letra"
+G=0
+for u in $(obter "$B/auth/login" | grep -oE 'href="/_next/static/[^"]+\.css"' | sed -E 's/^href="//;s/"$//' | sort -u); do
+  obter "$B$u" | grep -q 'fonts.googleapis.com' && { G=$((G + 1)); echo "    Google em $u"; }
+done
+[ "$G" = 0 ] && ok "nenhuma folha pede letra ao Google" || falha "$G folhas pedem letra ao Google"
 [ "$(obter "$B/favicon.ico" | sha256sum | cut -c1-16)" = "$(sha256sum < "$DIR/ficheiros/favicon.png" | cut -c1-16)" ] && ok "favicon é o nosso" || falha "favicon não é o nosso"
 docker exec $ID-app sh -c 'mkdir -p /uploads/verif && cp /app/apps/frontend/public/stratechna-icon.png /uploads/verif/t.png'
 U=$(curl -sI "$B/uploads/verif/t.png")

@@ -1,109 +1,138 @@
-/* ── Stratechna Branding v5 ────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   Stratechna Social — aspecto Stratechna por cima do Postiz (injectado pelo
+   nginx em todas as páginas, depois das folhas do upstream).
 
-/* === CSS VARIABLES OVERRIDE === */
-:root, html, body {
-  --color-primary: #880000 !important;
-  --new-btn-primary: #880000 !important;
-  --color-forth: #3D5163 !important;
-  --new-textItemFocused: #CC0000 !important;
-  --new-boxFocused: rgba(61, 81, 99, 0.35) !important;
-  --new-ai-btn: #880000 !important;
-  --new-box-hover: rgba(61, 81, 99, 0.2) !important;
+   A regra do Orbit (docs/PLANO-ASPECTO-ORBIT-APPS.md §1):
+   - ARDÓSIA na estrutura: os cinzentos neutros do Postiz (claro e escuro)
+     passam a cinzentos-ardósia com a mesma luminosidade; o roxo de estrutura
+     do Postiz (realces, interruptores, separadores activos) passa a ardósia;
+   - VERMELHO #b20009 só no botão principal (o «btn-primary» do Postiz e os
+     botões de acção que trazem o roxo escrito à mão);
+   - cores de informação (verde, âmbar, vermelho de erro) intactas;
+   - DM Sans servida pela própria imagem (/fonts) — nada vai ao Google.
+
+   Só se redefinem fichas (--new-*, --color-*) e uma mão-cheia de classes;
+   nenhum ficheiro de código do Postiz é substituído.
+   ══════════════════════════════════════════════════════════════════════════ */
+@import url("/stratechna-fontes.css");
+
+/* ── Fichas comuns ─────────────────────────────────────────────────────── */
+:root, :root .dark, :root .light {
+  --stx-accao: #b20009;
+  --stx-accao-hover: #8c0007;
+  --stx-accao-activo: #730006;
+  --stx-estrutura: #1a2a33;
+  --stx-estrutura-2: #22343f;
+  --stx-estrutura-3: #2c414e;
+
+  --new-btn-primary: var(--stx-accao) !important;
+  --new-ai-btn: var(--stx-estrutura-3) !important;
+  --color-forth: var(--stx-estrutura-3) !important;
+  --color-seventh: var(--stx-estrutura-3) !important;
+  --color-custom4: var(--stx-estrutura-3) !important;
 }
 
-/* === LOGIN PAGE === */
-svg[width="101"][height="33"] { display: none !important; }
+/* ── Tema escuro: neutros → ardósia (mesma luminosidade OKLab) ─────────── */
+:root .dark {
+  --stx-accao: #d4151f;
+  --stx-accao-hover: #b20009;
+  --stx-accao-activo: #8c0007;
+  --new-back-drop: #000 !important;
+  --new-settings: #1d2429 !important;
+  --new-border: #1f262b !important;
+  --new-bgColor: #090f13 !important;
+  --new-bgColorInner: #141a1f !important;
+  --new-sep: #3e464a !important;
+  --new-bgLineColor: #1b2226 !important;
+  --new-textItemFocused: #141a1f !important;
+  --new-big-strips: #10161a !important;
+  --new-blockSeparator: #20272c !important;
+  --new-box-hover: #1a2025 !important;
+  --new-btn-simple: #2a3236 !important;
+  --new-col-color: #252d31 !important;
+  --new-menu-dots: #626a6f !important;
+  --new-small-strips: #13191e !important;
+  --new-table-border: #252c31 !important;
+  --new-table-header: #181e23 !important;
+  --new-table-text: #929ba0 !important;
+  --new-table-text-focused: #b5c0ca !important;
+  --new-textItemBlur: #737c81 !important;
+  --color-primary: #090f13 !important;
+  --color-secondary: #070c10 !important;
+  --color-third: #070c10 !important;
+}
+
+/* ── Tema claro ────────────────────────────────────────────────────────── */
+:root .light {
+  --new-back-drop: #1a2a33 !important;
+  --new-settings: #ebeff1 !important;
+  --new-sep: #d4d9dd !important;
+  --new-border: #e9ecef !important;
+  --new-bgColor: #eff2f5 !important;
+  --new-bgLineColor: #e5e9ec !important;
+  --new-textItemFocused: #1a2a33 !important;
+  --new-boxFocused: #e8edf1 !important;
+  --new-big-strips: #f4f7f9 !important;
+  --new-blockSeparator: #eff3f5 !important;
+  --new-box-hover: #f3f6f8 !important;
+  --new-btn-simple: #ebeff1 !important;
+  --new-col-color: #eef1f4 !important;
+  --new-table-border: #e5e9ec !important;
+  --new-table-header: #f4f7f9 !important;
+  --new-table-text-focused: #2c414e !important;
+  --color-primary: #eff2f5 !important;
+}
+
+/* ── Letra ─────────────────────────────────────────────────────────────── */
+html, body, [class*="plus_jakarta_sans"], button, input, select, textarea,
+.wallet-adapter-button {
+  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+}
+body { -webkit-font-smoothing: antialiased; }
+
+/* ── Marca do upstream escondida ───────────────────────────────────────── */
+svg[width="101"][height="33"] { display: none !important; }   /* logótipo no login */
 div.text-\[36px\] { display: none !important; }
+svg[width="60"][height="60"] { display: none !important; }    /* logótipo na barra */
 
-/* === SIDEBAR === */
-svg[width="60"][height="60"] { display: none !important; }
-
-/* Borda do item activo na sidebar: vermelho → cinzento azulado */
-/* O item activo tem border-left com cor textItemFocused */
-[class*="minCustom:h-[54px]"][class*="text-textItemFocused"],
-[class*="minCustom:h-[54px]"].text-textItemFocused,
-a.text-textItemFocused,
-button.text-textItemFocused {
-  border-left-color: #3D5163 !important;
-  border-color: #3D5163 !important;
+/* ── O botão principal: o único vermelho ───────────────────────────────── */
+.bg-btnPrimary,
+[class*="bg-\[#612BD3\]"], [class*="bg-\[#612bd3\]"],
+[class*="bg-\[#6c47ff\]"], [class*="bg-\[#7640e0\]"], [class*="bg-\[#5023b8\]"],
+[class*="bg-\[#7B3FF2\]"], [class*="bg-\[#622FF6\]"] {
+  background-color: var(--stx-accao) !important;
 }
-
-/* === BOTÕES PRIMÁRIOS === */
-.bg-primary, [class*="bg-primary"],
-[class*="bg-\[#612BD3\]"],
-[class*="bg-\[#6c47ff\]"],
-[class*="bg-\[#7640e0\]"],
-[class*="bg-\[#5023b8\]"],
-[class*="bg-\[#7B3FF2\]"],
-[class*="bg-\[#622FF6\]"] {
-  background-color: #880000 !important;
+.bg-btnPrimary:hover,
+[class*="bg-\[#612BD3\]"]:hover, [class*="bg-\[#612bd3\]"]:hover,
+[class*="bg-\[#6c47ff\]"]:hover, [class*="bg-\[#622FF6\]"]:hover {
+  background-color: var(--stx-accao-hover) !important;
 }
-[class*="bg-\[#612BD3\]"]:hover,
-[class*="bg-\[#6c47ff\]"]:hover,
-.bg-primary:hover { background-color: #660000 !important; }
+.forceChange .changeColor { background: var(--stx-accao) !important; }
 
-.bg-btnPrimary { background-color: #880000 !important; }
-.bg-btnPrimary:hover { background-color: #660000 !important; }
-.bg-forth { background-color: #3D5163 !important; }
-.bg-forth:hover { background-color: #2a3a47 !important; }
-.bg-ai { background-color: #880000 !important; }
+/* ── Roxo de estrutura → ardósia ───────────────────────────────────────── */
+.bg-forth, .bg-seventh, .bg-customColor4, .bg-ai { background-color: var(--stx-estrutura-3) !important; }
+.bg-forth:hover, .bg-seventh:hover { background-color: var(--stx-estrutura-2) !important; }
+[class*="text-\[#FC69FF\]"], [class*="text-\[#612BD3\]"],
+[class*="text-\[#6c47ff\]"], [class*="text-\[#B69DEC\]"] { color: #93a2af !important; }
+.light [class*="text-\[#FC69FF\]"], .light [class*="text-\[#612BD3\]"],
+.light [class*="text-\[#6c47ff\]"], .light [class*="text-\[#B69DEC\]"] { color: #2c414e !important; }
+[class*="border-\[#612BD3\]"], [class*="border-\[#622FF6\]"], [class*="border-\[#FC69FF\]"] {
+  border-color: var(--stx-estrutura-3) !important;
+}
+.from-\[\#622aff\] { --tw-gradient-from: var(--stx-estrutura-3) var(--tw-gradient-from-position) !important; }
+.to-\[\#8b5cf6\] { --tw-gradient-to: var(--stx-estrutura) var(--tw-gradient-to-position) !important; }
+.scrollbar-thumb-\[\#612AD5\] { --scrollbar-thumb: #5d6e7b !important; }
 
-/* === TEXTO PRIMÁRIO === */
-.text-primary, [class*="text-primary"],
-[class*="text-\[#FC69FF\]"],
-[class*="text-\[#612BD3\]"],
-[class*="text-\[#6c47ff\]"],
-[class*="text-\[#B69DEC\]"] { color: #CC0000 !important; }
-
-/* === BORDAS PRIMÁRIAS === */
-[class*="border-\[#612BD3\]"],
-[class*="border-\[#622FF6\]"],
-[class*="border-\[#FC69FF\]"],
-.border-primary { border-color: #880000 !important; }
-[class*="hover:border-\[#612BD3\]"]:hover { border-color: #880000 !important; }
-
-/* === ITEM ACTIVO SIDEBAR === */
-.bg-boxFocused { background-color: rgba(61, 81, 99, 0.35) !important; }
-.text-textItemFocused { color: #CC0000 !important; border-color: #3D5163 !important; }
-.hover\:bg-boxFocused:hover { background-color: rgba(61, 81, 99, 0.25) !important; }
-.hover\:text-textItemFocused:hover { color: #CC0000 !important; }
-
-/* === TOGGLES / SWITCHES (roxo → vermelho Stratechna) === */
-/* Tailwind/React toggles com fundo roxo quando activos */
+/* Interruptores ligados: estrutura, não acção */
 button[role="switch"][data-state="checked"],
-button[role="switch"][aria-checked="true"],
-[class*="bg-[#612BD3]"],
-[class*="checked:bg-primary"],
-input:checked + span,
-input:checked ~ span { background-color: #880000 !important; }
+button[role="switch"][aria-checked="true"] { background-color: var(--stx-estrutura-3) !important; }
 
-/* Scrollbar thumb roxo */
-.scrollbar-thumb-\[\#612AD5\] { --scrollbar-thumb: #880000 !important; }
+/* Item activo da barra lateral: o traço vermelho à esquerda, como no portal */
+.text-textItemFocused { border-color: #ea5c55 !important; }
 
-/* Gradient AI/premium com roxo */
-.from-\[\#622aff\] { --tw-gradient-from: #880000 var(--tw-gradient-from-position) !important; }
-.to-\[\#8b5cf6\] { --tw-gradient-to: #660000 var(--tw-gradient-to-position) !important; }
-
-/* ── Fim Stratechna Branding v5 ─────────────────────────────────────── */
-
-/* Toggle activo */
-.bg-customColor4 { background-color: #880000 !important; }
-/* Borda lateral activa */
-.border-fifth { border-color: #3D5163 !important; }
-/* Borda geral vermelha da sidebar */
-[class*="newBgLineColor"] { border-color: #2A3A4A !important; }
-/* Outline vermelho -> azulado */
-body * { outline-color: #3D5163 !important; }
-/* Borda exterior wrapper */
-.bg-newBgLineColor { background-color: #2A3A4A !important; }
-.newBgLineColor { background-color: #2A3A4A !important; }
-/* Body background: nao usar cor primaria como fundo */
-body, body.dark { background-color: #0E0E0E !important; background: #0E0E0E !important; }
-/* !bg-primary no body -> escuro */
-body.\!bg-primary { background-color: #0E0E0E !important; }
-/* === LISTA DE ORGANIZAÇÕES DA BARRA DE TOPO ===
-   O menu abre com `absolute top-[100%]` e sem z-index: o conteúdo da página,
-   que é pintado depois, ficava-lhe por cima. Da terceira organização para
-   baixo não se via nada e o clique ia parar ao conteúdo que estava atrás.
-   Visto a 11-10-2026 com quatro organizações — a Webgate era inalcançável. */
+/* ── Lista de organizações da barra de topo ────────────────────────────── */
+/* O menu abre com `absolute top-[100%]` e sem z-index: o conteúdo pintado
+   depois ficava-lhe por cima (visto a 11-10-2026 com quatro organizações). */
 .group > .absolute.top-\[100\%\].end-0.bg-third { z-index: 60; }
+
+::selection { background: rgba(178, 0, 9, .25); }

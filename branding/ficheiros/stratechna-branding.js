@@ -24,7 +24,7 @@
       padding: 48px 40px;
       position: relative;
       overflow: hidden;
-      background: #0E0E0E;
+      background: #090f13;
     }
     @media (max-width: 1024px) {
       #stratechna-login-panel { display: none !important; }
@@ -90,7 +90,7 @@
     }
     /* Título: branco, só "presença digital" em vermelho */
     #stratechna-login-panel .s-title {
-      font-family: 'Helvetica Neue', Helvetica, sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 34px;
       font-weight: 700;
       color: #E0E0E0;
@@ -99,7 +99,7 @@
     }
     #stratechna-login-panel .s-title em {
       font-style: normal;
-      color: #CC0000;
+      color: #b5c0ca;
     }
     #stratechna-login-panel .s-subtitle {
       font-size: 13.5px;
@@ -317,8 +317,8 @@
     document.querySelectorAll('*').forEach(function(el) {
       var bg = getComputedStyle(el).backgroundColor;
       var col = getComputedStyle(el).color;
-      if (purpleRgbs.indexOf(bg) !== -1) el.style.setProperty('background-color','#880000','important');
-      if (purpleRgbs.indexOf(col) !== -1) el.style.setProperty('color','#CC0000','important');
+      if (purpleRgbs.indexOf(bg) !== -1) el.style.setProperty('background-color','#2c414e','important');
+      if (purpleRgbs.indexOf(col) !== -1) el.style.setProperty('color','#93a2af','important');
     });
 
     // DATA ACTUAL

@@ -42,7 +42,10 @@ def trocar(f, padrao, novo, minimo=1, regex=False):
 
 # ── 1. Ficheiros próprios, servidos pelo Next a partir de public/ ──────────
 for f in PROPRIOS.iterdir():
-    shutil.copy(f, PUBLIC / f.name)
+    if f.is_dir():  # stratechna-fonts/: a DM Sans servida pela própria imagem
+        shutil.copytree(f, PUBLIC / f.name, dirs_exist_ok=True)
+    else:
+        shutil.copy(f, PUBLIC / f.name)
 # favicons do upstream passam a ser o nosso (imagens)
 for nome in ("favicon.ico", "favicon.png", "postiz-fav.png"):
     shutil.copy(PROPRIOS / "favicon.png", PUBLIC / nome)
@@ -78,6 +81,28 @@ for f in alvos:
 if n_nome < 500:
     erros.append(f"nome: só {n_nome} trocas — estrutura das traduções mudou?")
 
+# ── 3b. Nada de letra pedida ao Google (RGPD) ──────────────────────────────
+# A folha do wallet-adapter (Solana) que o Postiz inclui em todas as páginas
+# começa por um @import da DM Sans no fonts.googleapis.com: cada visita mandava
+# o IP do utilizador à Google. Troca-se pela nossa folha local da mesma letra.
+GOOGLE = re.compile(r'@import\s*(?:url\()?["\']https://fonts\.googleapis\.com/css2\?[^"\']*["\']\)?;?')
+folhas = [p for p in (NEXT / "static").rglob("*.css") if p.is_file()]
+n_google = 0
+for f in folhas:
+    t = f.read_text(encoding="utf-8", errors="surrogateescape")
+    t2, n = GOOGLE.subn('@import "/stratechna-fontes.css";', t)
+    if n:
+        f.write_text(t2, encoding="utf-8", errors="surrogateescape")
+        n_google += n
+if n_google < 1:
+    erros.append("google: o @import da letra no Google não apareceu — o wallet-adapter mudou?")
+resto = [str(f) for f in folhas if "fonts.googleapis.com" in f.read_text(encoding="utf-8", errors="surrogateescape")]
+if resto:
+    erros.append(f"google: ainda há folhas a pedir letra ao Google: {resto[:3]}")
+for f in ("stratechna-fontes.css", "stratechna-fonts/dm-sans-latin-wght-normal.woff2"):
+    if not (PUBLIC / f).exists():
+        erros.append(f"letra: {f} não ficou em public/")
+
 # ── 4. Verificação final ────────────────────────────────────────────────────
 sobras = [str(f) for f in alvos if NOME.search(f.read_text(encoding="utf-8", errors="surrogateescape"))]
 if sobras:
@@ -92,4 +117,5 @@ if erros:
         print("  - " + e, file=sys.stderr)
     sys.exit(1)
 print(f"branding: {n_nome} trocas do nome em {len(alvos)} ficheiros, identificadores intactos ({ident}), "
-      f"nginx com injecção da marca, {len(list(PROPRIOS.iterdir()))} ficheiros próprios")
+      f"nginx com injecção da marca, {len(list(PROPRIOS.iterdir()))} ficheiros próprios, "
+      f"{n_google} @import do Google trocados pela letra local")
