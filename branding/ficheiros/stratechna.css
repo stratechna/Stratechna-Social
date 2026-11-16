@@ -109,9 +109,21 @@ svg[width="60"][height="60"] { display: none !important; }    /* logótipo na ba
 }
 .forceChange .changeColor { background: var(--stx-accao) !important; }
 
+/* O componente Button do Postiz pinta o botão principal com `bg-forth` (o
+   roxo da marca deles): Entrar, Criar publicação, Gravar. É a acção. */
+.bg-forth { background-color: var(--stx-accao) !important; }
+.bg-forth:hover { background-color: var(--stx-accao-hover) !important; }
+.bg-forth:active { background-color: var(--stx-accao-activo) !important; }
+.bg-forth:disabled, .bg-forth[disabled] { background-color: #5d6b73 !important; }
+
 /* ── Roxo de estrutura → ardósia ───────────────────────────────────────── */
-.bg-forth, .bg-seventh, .bg-customColor4, .bg-ai { background-color: var(--stx-estrutura-3) !important; }
-.bg-forth:hover, .bg-seventh:hover { background-color: var(--stx-estrutura-2) !important; }
+.bg-seventh, .bg-customColor4, .bg-ai { background-color: var(--stx-estrutura-3) !important; }
+.bg-seventh:hover { background-color: var(--stx-estrutura-2) !important; }
+
+/* Fundos escritos à mão (entrada e cartões): neutros → ardósia */
+.bg-\[\#0E0E0E\], .bg-\[\#0e0e0e\] { background-color: #090f13 !important; }
+.bg-\[\#1A1919\], .bg-\[\#1a1919\] { background-color: #141a1f !important; }
+.light .bg-\[\#1A1919\], .light .bg-\[\#1a1919\] { background-color: #fff !important; }
 [class*="text-\[#FC69FF\]"], [class*="text-\[#612BD3\]"],
 [class*="text-\[#6c47ff\]"], [class*="text-\[#B69DEC\]"] { color: #93a2af !important; }
 .light [class*="text-\[#FC69FF\]"], .light [class*="text-\[#612BD3\]"],
