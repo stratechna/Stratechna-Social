@@ -42,7 +42,7 @@ def trocar(f, padrao, novo, minimo=1, regex=False):
 
 # ── 1. Ficheiros próprios, servidos pelo Next a partir de public/ ──────────
 for f in PROPRIOS.iterdir():
-    if f.is_dir():  # stratechna-fonts/: a DM Sans servida pela própria imagem
+    if f.is_dir():
         shutil.copytree(f, PUBLIC / f.name, dirs_exist_ok=True)
     else:
         shutil.copy(f, PUBLIC / f.name)
@@ -99,7 +99,7 @@ if n_google < 1:
 resto = [str(f) for f in folhas if "fonts.googleapis.com" in f.read_text(encoding="utf-8", errors="surrogateescape")]
 if resto:
     erros.append(f"google: ainda há folhas a pedir letra ao Google: {resto[:3]}")
-for f in ("stratechna-fontes.css", "stratechna-fonts/dm-sans-latin-wght-normal.woff2"):
+for f in ("stratechna-fontes.css", "stratechna-dm-sans-latin-wght-normal.woff2"):
     if not (PUBLIC / f).exists():
         erros.append(f"letra: {f} não ficou em public/")
 

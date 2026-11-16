@@ -98,7 +98,7 @@ for f in stratechna-branding.js stratechna.css stratechna-logo.png stratechna-ic
 done
 rm -f /tmp/$ID-f /tmp/$ID-h
 echo "== aspecto Stratechna: letra local, nada do Google =="
-for f in stratechna-fontes.css stratechna-fonts/dm-sans-latin-wght-normal.woff2 stratechna-fonts/dm-sans-latin-ext-wght-normal.woff2 stratechna-fonts/dm-sans-latin-wght-italic.woff2; do
+for f in stratechna-fontes.css stratechna-dm-sans-latin-wght-normal.woff2 stratechna-dm-sans-latin-ext-wght-normal.woff2 stratechna-dm-sans-latin-wght-italic.woff2; do
   C=$(curl -s --retry 5 --retry-delay 3 --retry-all-errors -o /dev/null -w '%{http_code}' "$B/$f")
   [ "$C" = 200 ] && ok "/$f (200)" || falha "/$f devolveu $C"
 done
