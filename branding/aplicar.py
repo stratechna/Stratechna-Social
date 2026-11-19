@@ -81,6 +81,22 @@ for f in alvos:
 if n_nome < 500:
     erros.append(f"nome: só {n_nome} trocas — estrutura das traduções mudou?")
 
+# ── 3c. TikTok: «Quem pode ver este vídeo?» sem valor por omissão ──────────
+# As regras da Content Posting API exigem que o utilizador escolha a privacidade
+# (sem opção pré-escolhida); o upstream vinha com «Público para todos». Com o
+# valor vazio aparece «Seleccionar» e a validação (IsIn) recusa publicar sem
+# escolha. Pedido do Vítor para a auditoria do TikTok (19-11-2026).
+TIKTOK_PRIV = re.compile(r'\("privacy_level",\{value:"PUBLIC_TO_EVERYONE"\}\)')
+n_tiktok = 0
+for f in alvos:
+    t = f.read_text(encoding="utf-8", errors="surrogateescape")
+    t2, n = TIKTOK_PRIV.subn('("privacy_level",{value:""})', t)
+    if n:
+        f.write_text(t2, encoding="utf-8", errors="surrogateescape")
+        n_tiktok += n
+if n_tiktok < 1:
+    erros.append("tiktok: a privacidade por omissão já não aparece — o formulário do TikTok mudou?")
+
 # ── 3b. Nada de letra pedida ao Google (RGPD) ──────────────────────────────
 # A folha do wallet-adapter (Solana) que o Postiz inclui em todas as páginas
 # começa por um @import da DM Sans no fonts.googleapis.com: cada visita mandava
@@ -118,4 +134,4 @@ if erros:
     sys.exit(1)
 print(f"branding: {n_nome} trocas do nome em {len(alvos)} ficheiros, identificadores intactos ({ident}), "
       f"nginx com injecção da marca, {len(list(PROPRIOS.iterdir()))} ficheiros próprios, "
-      f"{n_google} @import do Google trocados pela letra local")
+      f"{n_google} @import do Google trocados pela letra local, {n_tiktok} privacidades do TikTok sem omissão")
